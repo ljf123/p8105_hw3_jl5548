@@ -6,6 +6,8 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
+library(ggridges)
+library(patchwork)
 library(tidyverse)
 library(viridis)
 knitr::opts_chunk$set(
@@ -26,11 +28,81 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ## Problem 1
 
+```{r}
+## Load data and view
+library(p8105.datasets)
+data("instacart")
+instacart
+```
 
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 
 ```{r}
-
+## Understand variables
+str(instacart)
+nrow(instacart)
+ncol(instacart)
 ```
+
+
+Then, do or answer the following (commenting on the results of each):
+
+* How many aisles are there, and which aisles are the most items ordered from?
+```{r}
+## reorder the dataframe
+df_aisle = instacart %>% 
+  arrange(aisle_id, aisle) %>% 
+  group_by(aisle_id, aisle) %>% 
+  summarize(count = n()) 
+most_ordered_aisle = df_aisle %>% 
+  filter(count == max(pull(df_aisle, count))) %>% 
+  select(aisle)
+```
+There are `r nrow(df_aisle)` aisles, and aisle #`r pull(most_ordered_aisle, aisle_id)`, `r pull(most_ordered_aisle, aisle)`, are the most items ordered from.
+
+* Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+```{r}
+plot_aisle = df_aisle %>% 
+  filter(count > 10000) %>% 
+  ggplot(aes(x = count, y = aisle, size = count, color = count)) +
+  geom_point()
+plot_aisle
+```
+As shown in the plot above, y-axis contains all the aisle names and x-axis contains the corresponding number of items ordered in each aisle (those with more than 10000 items ordered). Number of items ordered in each aisle is represented by the size and color of the points, scale shown in the bottom of the graph. 
+
+* Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+```{r}
+most_popular = instacart %>% 
+  filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>% 
+  group_by(aisle, product_name) %>% 
+  summarize(
+    count = n(),
+    time_ordered = sum(order_number)
+    ) %>% 
+  top_n(3, count) %>% 
+  arrange(aisle, desc(count), product_name) 
+knitr::kable(most_popular)
+```
+
+* Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+```{r}
+weekday = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+mean_hour_ordered = instacart %>%
+  filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>% 
+  select(product_name, order_dow, order_hour_of_day) %>% 
+  group_by(product_name, order_dow) %>% 
+  summarize(
+    mean_hour = mean(order_hour_of_day)
+  ) %>% 
+  mutate(order_dow = weekday[order_dow + 1]) %>% 
+  pivot_wider(
+    names_from = order_dow,
+    values_from = mean_hour
+  ) 
+knitr::kable(mean_hour_ordered)
+```
+
+
 
 ## Problem 2
 
