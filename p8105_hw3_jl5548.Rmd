@@ -28,6 +28,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ## Problem 1
 
+0. Preparation
 ```{r}
 ## Load data and view
 library(p8105.datasets)
@@ -35,7 +36,7 @@ data("instacart")
 instacart
 ```
 
-The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
+1. The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
 
 ```{r, eval = FALSE}
 ## Understand variables
@@ -43,7 +44,7 @@ str(instacart)
 nrow(instacart)
 ncol(instacart)
 ```
-The dataset instacart records online grocery orders from Instacart users and contains `r nrow(instacart)` observations of 131,209 unique users. Each row is a product from an order, and each user only place one order in this dataset. There are `r ncol(instacart)` variables in this dataset:
+  The dataset instacart records online grocery orders from Instacart users and contains `r nrow(instacart)` observations of 131,209 unique users. Each row is a product from an order, and each user only place one order in this dataset. There are `r ncol(instacart)` variables in this dataset:
 *order_id: order identifier
 *product_id: product identifier
 *add_to_cart_order: order in which each product was added to cart
@@ -65,7 +66,7 @@ instacart %>% filter(order_id == 1, product_id == 49302)
 ```
 
 
-Then, do or answer the following (commenting on the results of each):
+2. Then, do or answer the following (commenting on the results of each):
 
 * How many aisles are there, and which aisles are the most items ordered from?
 ```{r}
@@ -78,7 +79,7 @@ most_ordered_aisle = df_aisle %>%
   filter(count == max(pull(df_aisle, count))) %>% 
   select(aisle)
 ```
-There are `r nrow(df_aisle)` aisles, and aisle #`r pull(most_ordered_aisle, aisle_id)`, `r pull(most_ordered_aisle, aisle)`, are the most items ordered from.
+  There are `r nrow(df_aisle)` aisles, and aisle #`r pull(most_ordered_aisle, aisle_id)`, `r pull(most_ordered_aisle, aisle)`, are the most items ordered from.
 
 * Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
 ```{r}
@@ -88,7 +89,7 @@ plot_aisle = df_aisle %>%
   geom_point()
 plot_aisle
 ```
-As shown in the plot above, y-axis contains all the aisle names and x-axis contains the corresponding number of items ordered in each aisle (those with more than 10000 items ordered). Number of items ordered in each aisle is represented by the size and color of the points, scale shown in the bottom of the graph. 
+  As shown in the plot above, y-axis contains all the aisle names and x-axis contains the corresponding number of items ordered in each aisle (those with more than 10000 items ordered). Number of items ordered in each aisle is represented by the size and color of the points, scale shown in the bottom of the graph. 
 
 * Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 ```{r}
@@ -126,7 +127,7 @@ knitr::kable(mean_hour_ordered)
 
 ## Problem 2
 
-Preparation
+0. Preparation
 ```{r}
 ## Load data and view
 data("brfss_smart2010")
@@ -141,7 +142,7 @@ ncol(brfss_smart2010)
 ```
 
 
-First, do some data cleaning:
+1. First, do some data cleaning:
 
 * format the data to use appropriate variable names
 * focus on the “Overall Health” topic
@@ -159,7 +160,7 @@ df_brfss = brfss_smart2010 %>%
 ```
 
 
-Using this dataset, do or answer the following (commenting on the results of each):
+2. Using this dataset, do or answer the following (commenting on the results of each):
 
 * In 2002, which states were observed at 7 or more locations? What about in 2010?
 ```{r}
@@ -182,18 +183,46 @@ state_2010 = df_brfss %>%
 state_2002
 state_2010
 ```
-As shown above, `r state_2002` were observed at 7 or more locations in 2002, and `r state_2010` were observed at 7 or more locations in 2010.
+  As shown above, `r state_2002` were observed at 7 or more locations in 2002, and `r state_2010` were observed at 7 or more locations in 2010.
 
 * Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
 ```{r}
+df_excellent = df_brfss %>%
+  filter(response == "Excellent") %>% 
+  select(year, state, data_value) %>% 
+  group_by(year, state) %>% 
+  summarise(mean_value = mean(data_value, na.rm = TRUE))
 
+plot_excellent = df_excellent %>% 
+  ggplot(aes(x = year, y = mean_value, color = state)) +
+  geom_line(alpha = .5) +
+  labs(title = "average value over time in different states", 
+       y = "average value within a state")
+
+df_excellent
+plot_excellent
 ```
 
 * Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
 ```{r}
+df_two_panel = df_brfss %>%
+  filter(state == "NY ") %>% 
+  filter(year == 2006 | year == 2010) %>%
+  select(year, state, county, data_value, response) %>% 
+  group_by(response) 
+  
+plot_two_panel = df_two_panel %>% 
+  ggplot(aes(x = data_value, fill = response)) +
+  geom_density_line() +
+  facet_grid(year~response) +
+  labs(title = "distribution of data value for responses among locations in NY state in 2006 and 2010",
+       x = "data value")
 
+plot_two_panel
 ```
 
 
 
 ## Problem 3
+
+
