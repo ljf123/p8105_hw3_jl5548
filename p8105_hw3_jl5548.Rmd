@@ -49,21 +49,21 @@ ncol(instacart)
 
   The dataset instacart records online grocery orders from Instacart users and contains `r nrow(instacart)` observations of 131,209 unique users. Each row is a product from an order, and each user only place one order in this dataset. There are `r ncol(instacart)` variables in this dataset:
   
-*order_id: order identifier
-*product_id: product identifier
-*add_to_cart_order: order in which each product was added to cart
-*reordered: 1 if this prodcut has been ordered by this user in the past, 0 otherwise
-*user_id: customer identifier
-*eval_set: which evaluation set this order belongs in (Note that the data for use in this class is exclusively from the “train” eval_set)
-*order_number: the order sequence number for this user (1=first, n=nth)
-*order_dow: the day of the week on which the order was placed
-*order_hour_of_day: the hour of the day on which the order was placed
-*days_since_prior_order: days since the last order, capped at 30, NA if order_number=1
-*product_name: name of the product
-*aisle_id: aisle identifier
-*department_id: department identifier
-*aisle: the name of the aisle
-*department: the name of the department
+* order_id: order identifier
+* product_id: product identifier
+* add_to_cart_order: order in which each product was added to cart
+* reordered: 1 if this prodcut has been ordered by this user in the past, 0 otherwise
+* user_id: customer identifier
+* eval_set: which evaluation set this order belongs in (Note that the data for use in this class is exclusively from the “train” eval_set)
+* order_number: the order sequence number for this user (1=first, n=nth)
+* order_dow: the day of the week on which the order was placed
+* order_hour_of_day: the hour of the day on which the order was placed
+* days_since_prior_order: days since the last order, capped at 30, NA if order_number=1
+* product_name: name of the product
+* aisle_id: aisle identifier
+* department_id: department identifier
+* aisle: the name of the aisle
+* department: the name of the department
 
 Among these variables, some of the key variables are reordered, order_dow, order_hour_of_day, days_since_prior_order, product_name, and aisle. The variable reordered informs us whether the product has been ordered in the past by the same user. Order_dow and order_hour_of_day informs us which day of the week and what hour the order was placed, respectively. Days_since_prior_order gives us a sense of the order cycle of a customer. Product_name and aisle provides us the information of which product and to which aisle the product belong, respectively. For instance, in the observation shown below, the product Bulgarian yogurt (product_name) from dairy/egg department (department) and yogurt aisle (aisle) was ordered on Thursday (order_dow) at 10am (order_hour_of_day), 9 days since the same person ordered it last time (days_since_prior_order). 
 
