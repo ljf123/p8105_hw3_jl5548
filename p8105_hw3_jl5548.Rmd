@@ -278,15 +278,50 @@ The dataset df_accel records five weeks of accelerometer data collected on a 63 
 
 **Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?**
 ```{r}
+total_activity_over_day = df_accel %>% 
+  mutate(day_id = recode(day, "Monday" = "1" ,"Tuesday" =  "2", "Wednesday" = "3", "Thursday" = "4", "Friday" = "5", "Saturday" = "6", "Sunday" = "7")) %>% 
+  mutate(day_id = as.numeric(day_id) + 7 * (week - 1)) %>% 
+  arrange(day_id) %>% 
+  select(week, day_id, day, activity_count) %>% 
+  group_by(week, day_id, day) %>% 
+  summarize(total_activity = sum(activity_count))
+knitr::kable(total_activity_over_day)
 
+## To see whether there are any apparent trends, we can plot these data and investigate
+plot_trend = total_activity_over_day %>% 
+  ggplot(aes(x = day_id, y = total_activity)) + 
+  geom_point() +
+  geom_line() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "trend of total activity over the day",
+    x = "day",
+    y = "total activity"
+  )
 ```
-
+From the plot, it occurs that the total activity over the day is oscillating in the range of `r min(pull(total_activity_over_day, total_activity))` to `r max(pull(total_activity_over_day, total_activity))`. Despite the overall oscillation from day to day, the total activity is generally increasing from day 1 to day 15, and has a sudden drop from day 24 to day 27, and a steep increase from day 27 to day 33. In the end of the record, the total activity has a large drop again.
 
 
 **Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.**
+```{r}
+df_inspection = df_accel %>% 
+  mutate(day_id = recode(day, "Monday" = "1" ,"Tuesday" =  "2", "Wednesday" = "3", "Thursday" = "4", "Friday" = "5", "Saturday" = "6", "Sunday" = "7")) %>% 
+  mutate(day_id = as.numeric(day_id) + 7 * (week - 1)) %>% 
+  arrange(day_id) %>% 
+  mutate(hour = ceiling(minute / 60)) %>% 
+  select(week, day_id, day, hour, activity_count) %>%
+  group_by(week, day_id, day, hour) %>% 
+  summarize(total_activity = sum(activity_count))
 
+plot_inspection = df_inspection %>% 
+  ggplot(aes(x = hour, y = total_activity, color = day)) +
+  geom_point() +
+  geom_line() +
+  labs(title = "24-hour activity for each day",
+       y = "total activity for each hour")
 
+plot_inspection
+```
 
-
-
+As shown in the plot, this person has relatively small count of activities at the beginning of each day (0-6am). The activity count increases after 6am and generally decreases after 21pm. There is a peak of activity count around 21pm on Friday.
 
