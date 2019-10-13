@@ -28,7 +28,8 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ## Problem 1
 
-0. Preparation
+**Preparation**
+
 ```{r}
 ## Load data and view
 library(p8105.datasets)
@@ -36,7 +37,8 @@ data("instacart")
 instacart
 ```
 
-1. The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
+
+**The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations.**
 
 ```{r, eval = FALSE}
 ## Understand variables
@@ -44,7 +46,9 @@ str(instacart)
 nrow(instacart)
 ncol(instacart)
 ```
+
   The dataset instacart records online grocery orders from Instacart users and contains `r nrow(instacart)` observations of 131,209 unique users. Each row is a product from an order, and each user only place one order in this dataset. There are `r ncol(instacart)` variables in this dataset:
+  
 *order_id: order identifier
 *product_id: product identifier
 *add_to_cart_order: order in which each product was added to cart
@@ -60,15 +64,18 @@ ncol(instacart)
 *department_id: department identifier
 *aisle: the name of the aisle
 *department: the name of the department
+
 Among these variables, some of the key variables are reordered, order_dow, order_hour_of_day, days_since_prior_order, product_name, and aisle. The variable reordered informs us whether the product has been ordered in the past by the same user. Order_dow and order_hour_of_day informs us which day of the week and what hour the order was placed, respectively. Days_since_prior_order gives us a sense of the order cycle of a customer. Product_name and aisle provides us the information of which product and to which aisle the product belong, respectively. For instance, in the observation shown below, the product Bulgarian yogurt (product_name) from dairy/egg department (department) and yogurt aisle (aisle) was ordered on Thursday (order_dow) at 10am (order_hour_of_day), 9 days since the same person ordered it last time (days_since_prior_order). 
+
 ```{r}
 instacart %>% filter(order_id == 1, product_id == 49302)
 ```
 
 
-2. Then, do or answer the following (commenting on the results of each):
+**Then, do or answer the following (commenting on the results of each):**
 
-* How many aisles are there, and which aisles are the most items ordered from?
+__* How many aisles are there, and which aisles are the most items ordered from?__
+
 ```{r}
 ## reorder the dataframe
 df_aisle = instacart %>% 
@@ -81,7 +88,9 @@ most_ordered_aisle = df_aisle %>%
 ```
   There are `r nrow(df_aisle)` aisles, and aisle #`r pull(most_ordered_aisle, aisle_id)`, `r pull(most_ordered_aisle, aisle)`, are the most items ordered from.
 
-* Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+
+__* Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.__
+
 ```{r}
 plot_aisle = df_aisle %>% 
   filter(count > 10000) %>% 
@@ -91,7 +100,9 @@ plot_aisle
 ```
   As shown in the plot above, y-axis contains all the aisle names and x-axis contains the corresponding number of items ordered in each aisle (those with more than 10000 items ordered). Number of items ordered in each aisle is represented by the size and color of the points, scale shown in the bottom of the graph. 
 
-* Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+
+__* Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.__
+
 ```{r}
 most_popular = instacart %>% 
   filter(aisle == "baking ingredients" | aisle == "dog food care" | aisle == "packaged vegetables fruits") %>% 
@@ -105,7 +116,9 @@ most_popular = instacart %>%
 knitr::kable(most_popular)
 ```
 
-* Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+
+__* Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).__
+
 ```{r}
 weekday = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
 mean_hour_ordered = instacart %>%
@@ -127,7 +140,8 @@ knitr::kable(mean_hour_ordered)
 
 ## Problem 2
 
-0. Preparation
+**Preparation**
+
 ```{r}
 ## Load data and view
 data("brfss_smart2010")
@@ -142,12 +156,12 @@ ncol(brfss_smart2010)
 ```
 
 
-1. First, do some data cleaning:
+**First, do some data cleaning:**
 
-* format the data to use appropriate variable names
-* focus on the “Overall Health” topic
-* include only responses from “Excellent” to “Poor”
-* organize responses as a factor taking levels ordered from “Poor” to “Excellent”
+__* format the data to use appropriate variable names__
+__* focus on the “Overall Health” topic__
+__* include only responses from “Excellent” to “Poor”__
+__* organize responses as a factor taking levels ordered from “Poor” to “Excellent”__
 
 ```{r}
 df_brfss = brfss_smart2010 %>% 
@@ -160,9 +174,10 @@ df_brfss = brfss_smart2010 %>%
 ```
 
 
-2. Using this dataset, do or answer the following (commenting on the results of each):
+**Using this dataset, do or answer the following (commenting on the results of each):**
 
-* In 2002, which states were observed at 7 or more locations? What about in 2010?
+__* In 2002, which states were observed at 7 or more locations? What about in 2010?__
+
 ```{r}
 state_2002 = df_brfss %>% 
   filter(year == 2002) %>% 
@@ -185,7 +200,8 @@ state_2010
 ```
   As shown above, `r state_2002` were observed at 7 or more locations in 2002, and `r state_2010` were observed at 7 or more locations in 2010.
 
-* Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
+__* Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).__
+
 ```{r}
 # construct the dataset
 df_excellent = df_brfss %>%
@@ -206,7 +222,8 @@ plot_excellent
 ```
 As shown above, df_excellent is the dataset that limits to Excellent responses, and contains year, state, and mean of data_value across locations within a state. Plot_excellent is the corresponding "spaghetti" plot, showing each year on the x-axis and the corresponding mean of data_value within a state in that year on y-axis. To distinguish between different states, each state is labelled by a color.
 
-* Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+
+__* Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.__
 ```{r}
 # construct the dataset
 df_two_panel = df_brfss %>%
@@ -231,7 +248,7 @@ As shown above, plot_two_panel is the two-panel plot showing data_value for resp
 
 ## Problem 3
 
-* Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
+**Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).**
 ```{r}
 df_accel = read_csv("./data/accel_data.csv") %>% 
   janitor::clean_names() %>% 
@@ -245,12 +262,31 @@ df_accel = read_csv("./data/accel_data.csv") %>%
     week_day = ifelse(day == "Saturday" | day == "Sunday", "weekend", "weekday"),
     minute = as.numeric(minute)  # encode data with reasonable variable class
   ) 
+
+df_accel
+```
+
+The dataset df_accel records five weeks of accelerometer data collected on a 63 year-old male with BMI 25, who was admitted to the Advanced Cardiac Care Center of Columbia University Medical Center and diagnosed with congestive heart failure (CHF). The dataset has `r nrow(df_accel)` observations of `r ncol(df_accel)` variables. The variables include:
+
+* week (which of the five weeks it is recording)
+* day_id (which day it is since the first day)
+* day (which weekday it is Monday-Sunday) 
+* minute (the recording minute in a 24-hour day starting at midnight)
+* activity_count (the activity counts for the minute)
+* week_day (whether it is a weekday or weekend)
+
+
+**Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?**
+```{r}
+
 ```
 
 
-* Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+
+**Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.**
 
 
-* Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+
+
 
 
