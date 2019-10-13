@@ -187,12 +187,14 @@ state_2010
 
 * Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
 ```{r}
+# construct the dataset
 df_excellent = df_brfss %>%
   filter(response == "Excellent") %>% 
-  select(year, state, data_value) %>% 
+  select(year, state, data_value) %>%  #including year, state, and data_value
   group_by(year, state) %>% 
   summarise(mean_value = mean(data_value, na.rm = TRUE))
 
+# make a "spaghetti" plot
 plot_excellent = df_excellent %>% 
   ggplot(aes(x = year, y = mean_value, color = state)) +
   geom_line(alpha = .5) +
@@ -202,27 +204,53 @@ plot_excellent = df_excellent %>%
 df_excellent
 plot_excellent
 ```
+As shown above, df_excellent is the dataset that limits to Excellent responses, and contains year, state, and mean of data_value across locations within a state. Plot_excellent is the corresponding "spaghetti" plot, showing each year on the x-axis and the corresponding mean of data_value within a state in that year on y-axis. To distinguish between different states, each state is labelled by a color.
 
 * Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
 ```{r}
+# construct the dataset
 df_two_panel = df_brfss %>%
   filter(state == "NY ") %>% 
   filter(year == 2006 | year == 2010) %>%
   select(year, state, county, data_value, response) %>% 
   group_by(response) 
-  
+
+# make a two-panel plot (density plot)
 plot_two_panel = df_two_panel %>% 
   ggplot(aes(x = data_value, fill = response)) +
   geom_density_line() +
-  facet_grid(year~response) +
+  facet_grid(year~response) +  # separate by year and response categories
   labs(title = "distribution of data value for responses among locations in NY state in 2006 and 2010",
        x = "data value")
 
 plot_two_panel
 ```
+As shown above, plot_two_panel is the two-panel plot showing data_value for responses among locations in NY state for year 2006(top), and 2010(bottom). The x-axis displays data value scale for different responses, and the y-axis shows the density distribution of data value. Each distribution is filled by different colors of each response category. 
 
 
 
 ## Problem 3
+
+* Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc).
+```{r}
+df_accel = read_csv("./data/accel_data.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(   # tidy the data, put all activity columns into a variable "minute"
+    activity_1:activity_1440,
+    names_to = "minute",
+    names_prefix = "activity_",
+    values_to = "activity_count"
+  ) %>% 
+  mutate(   # create a weekday vs weekend variable
+    week_day = ifelse(day == "Saturday" | day == "Sunday", "weekend", "weekday"),
+    minute = as.numeric(minute)  # encode data with reasonable variable class
+  ) 
+```
+
+
+* Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+
+
+* Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
 
 
